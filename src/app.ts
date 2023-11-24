@@ -66,7 +66,6 @@ app.post(
       console.log(`${ALGO}: time, ${istTz}`);
       setCred(req);
       const response = await checkMarketConditionsAndExecuteTrade();
-      // console.log(`response: ${response}`);
       res.send({ response: response });
     } catch (err) {
       console.log(err);
