@@ -26,22 +26,8 @@ export interface HistoryInterface {
   fromdate: string;
   todate: string;
 }
-export enum HistoryInterval {
-  ONE_MINUTE = 'ONE_MINUTE',
-  THREE_MINUTE = 'THREE_MINUTE',
-  FIVE_MINUTE = 'FIVE_MINUTE',
-  TEN_MINUTE = 'TEN_MINUTE',
-  FIFTEEN_MINUTE = 'FIFTEEN_MINUTE',
-  THIRTY_MINUTE = 'THIRTY_MINUTE',
-  ONE_HOUR = 'ONE_HOUR',
-  ONE_DAY = 'ONE_DAY',
-}
-export enum TradeType {
-  POSITIONAL = 'positional',
-  INTRADAY = 'intraday',
-}
+
 export enum Strategy {
-  RSI = 'rsi',
   SHORTSTRADDLE = 'shortStraddle',
 }
 export interface JsonFileStructure {
@@ -196,7 +182,6 @@ export type ShortStraddleData = {
 export type AddShortStraddleData = {
   data: JsonFileStructure;
   shortStraddleData: ShortStraddleData;
-  tradeType: TradeType;
 };
 export type BothPresent = { ce: boolean; pe: boolean; stike: string };
 export type OrderData = {
@@ -213,7 +198,6 @@ export enum OptionType {
 }
 export type checkPositionToCloseType = {
   openPositions: Position[];
-  tradeType: TradeType;
 };
 export enum CheckOptionType {
   BOTH_CE_PE_PRESENT = 'both_present',
@@ -221,11 +205,5 @@ export enum CheckOptionType {
   ONLY_PE_PRESENT = 'pe_present',
   BOTH_CE_PE_NOT_PRESENT = 'ce_pe_not_present',
 }
-export type runOrbType = {
-  scriptName: string;
-  price: number;
-  maxSl: number;
-  tradeDirection: 'up' | 'down';
-  trailSl: number;
-};
+
 export type updateMaxSlType = { mtm: number; maxSl: number; trailSl: number };
