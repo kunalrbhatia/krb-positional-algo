@@ -9,6 +9,7 @@ import {
   checkStrike,
   createJsonFile,
   delay,
+  formatDate,
   getAtmStrikePrice,
   getLastThursdayOfCurrentMonth,
   getNearestStrike,
@@ -671,9 +672,13 @@ export const closeParticularTrade = async ({
 }) => {
   try {
     await delay({ milliSeconds: DELAY });
+    const checkTradeNetQty = isNaN(parseInt(trade.netQty));
+    const tradeNetQty = checkTradeNetQty ? 0 : parseInt(trade.netQty);
+    const transactionType =
+      tradeNetQty < 0 ? TRANSACTION_TYPE_BUY : TRANSACTION_TYPE_SELL;
     const transactionStatus = await doOrder({
       tradingsymbol: trade.tradingSymbol,
-      transactionType: TRANSACTION_TYPE_BUY,
+      transactionType: transactionType,
       symboltoken: trade.token,
     });
     console.log(`${ALGO} transactionStatus: `, transactionStatus);
@@ -831,7 +836,7 @@ export const addShortStraddleData = async ({
   }
 };
 const coreTradeExecution = async () => {
-  console.log(`${ALGO}: coreTradeExecution starts wait fetching positions...`);
+  console.log(`${ALGO}: coreTradeExecution starts, wait fetching positions...`);
   let data = await getPositionsJson();
   if (!data.isTradeExecuted) {
     console.log(`${ALGO}: executing trade`);
@@ -874,11 +879,13 @@ export const executeTrade = async () => {
   await delay({ milliSeconds: DELAY });
   await getPositionsJson();
   const closingTime: TimeComparisonType = { hours: 15, minutes: 15 };
-  console.log(
-    `${ALGO}: checking condition hasTimePassed15:15: ${isCurrentTimeGreater(
-      closingTime
-    )}`
-  );
+  const isMonthlyExpiryToday = getLastThursdayOfCurrentMonth() === formatDate();
+  const isPastClosingTime = isCurrentTimeGreater(closingTime);
+  console.log(`${ALGO}: has time passed 15:15: ${isPastClosingTime}`);
+  console.log(`${ALGO}: is monthly expiry today: ${isMonthlyExpiryToday}`);
+  if (isMonthlyExpiryToday && isPastClosingTime) {
+    await closeAllTrades();
+  }
   console.log(`${ALGO}: returning mtm to api response`);
   return mtmData;
 };
@@ -925,7 +932,6 @@ export const checkMarketConditionsAndExecuteTrade = async (
     return err;
   }
 };
-
 export const checkPositionAlreadyExists = async ({
   position,
   trades,

@@ -73,21 +73,19 @@ export const getNextExpiry = () => {
   const currentDay = today.day();
   const isWednesday = currentDay === 3;
   const isLastWednesday =
-    getLastWednesdayOfMonth().format('DDMMMYYYY').toUpperCase() ===
-    today.format('DDMMMYYYY').toUpperCase();
-  const isLastThursday =
-    getLastThursdayOfCurrentMonth() === today.format('DDMMMYYYY').toUpperCase();
+    formatDate(getLastWednesdayOfMonth()) === formatDate();
+  const isLastThursday = getLastThursdayOfCurrentMonth() === formatDate();
   const secondLastWednesday = getLastWednesdayOfMonth().subtract(7, 'days');
   let daysToNextWednesday = 3 - currentDay;
   if (daysToNextWednesday < 0) {
     daysToNextWednesday += 7;
   }
   if (isLastThursday) {
-    return today.format('DDMMMYYYY').toUpperCase();
+    return formatDate();
   } else if (isLastWednesday) {
-    return today.add(1, 'days').format('DDMMMYYYY').toUpperCase();
+    return formatDate(today.add(1, 'days'));
   } else if (isWednesday) {
-    return today.format('DDMMMYYYY').toUpperCase();
+    return formatDate();
   } else if (
     today.isBefore(getLastWednesdayOfMonth()) &&
     today.isAfter(secondLastWednesday)
@@ -95,7 +93,7 @@ export const getNextExpiry = () => {
     return getLastThursdayOfCurrentMonth();
   } else {
     const nextWednesday = today.add(daysToNextWednesday, 'days');
-    return nextWednesday.format('DDMMMYYYY').toUpperCase();
+    return formatDate(nextWednesday);
   }
 };
 
@@ -316,6 +314,9 @@ export const getNearestStrike = ({
     });
   return nearestStrike;
 };
+export const formatDate = (date: Moment = moment()) => {
+  return date.format('DDMMMYYYY').toUpperCase();
+};
 export const getLastThursdayOfCurrentMonth = () => {
   const today = moment();
   let lastDayOfMonth = moment().endOf('month');
@@ -331,7 +332,7 @@ export const getLastThursdayOfCurrentMonth = () => {
       lastDayOfMonth.subtract(1, 'days');
     }
   }
-  return lastDayOfMonth.format('DDMMMYYYY').toUpperCase();
+  return formatDate(lastDayOfMonth);
 };
 export const checkPositionsExistsForMonthlyExpiry = (
   openPositions: Position[]
